@@ -1,0 +1,257 @@
+#! /bin/sh
+#
+# Cross build configure script
+#
+# Required host commands: echo, pwd, expr, uname, tr, cat, cp
+#
+
+usage()
+{
+	if [ -n "$*" ]; then
+		echo "configure: $*"
+	fi
+	echo
+	echo "Usage: configure [options]"
+	echo "Options:"
+	echo "	--help			print this message"
+        echo "	--build=BUILD		use BUILD to compile target compiler"
+	echo "	--host=HOST		use HOST to compile target compiler"
+	echo "	--target=TARGET		use TARGET for target compiler"
+        echo "  --sysroot=SYSROOT       use SYSROOT for target compiler"
+
+	exit 1
+}
+
+quit()
+{
+	echo "Error: $1"
+	exit 1
+}
+
+setdefaults()
+{
+        build="x86_64-pc-cygwin"
+        host="x86_64"
+	target="arm-eabi"
+        sysroot="/cross-"$target
+	srcdir=`pwd`
+
+	# Use GNU tools as default toolchain
+	cc="gcc"
+	cpp="cpp"
+	as="as"
+	ld="ld"
+	ar="ar"
+	objcopy="objcopy"
+	objdump="objdump"
+	strip="strip"
+}
+
+checkpath()
+{
+	# Output files
+	CONFIG_MK=$srcdir/config.mk
+}
+
+parseargs()
+{
+	while [ -n "$1" ]; do
+		case $1 in
+		--*=*)
+			option=`expr "x$1" : 'x\([^=]*\)='`
+			optarg=`expr "x$1" : 'x[^=]*=\(.*\)'`
+			;;
+		--*)
+			option=$1
+			;;
+		*)
+			usage "unrecognized option $1"
+			;;
+		esac
+
+		case $option in
+		--help)
+			usage
+			;;
+		--build)
+			build=$optarg
+			;;
+		--host)
+			host=$optarg
+			;;
+		--target)
+			target=$optarg
+			;;
+		--sysroot)
+			sysroot=$optarg
+			;;
+		*)
+			usage "Unrecognized option $1"
+			;;
+		esac
+		shift
+	done
+}
+
+gettarget()
+{
+	if [ -z "$target" ]; then
+		echo "Warning: '--target' option was not specified"
+		echo "The target system was set to 'x86-elf'"
+		target="x86-elf"
+	fi
+
+	arch=`expr "x$target" : 'x\([^=]*\)-'`
+	platform=`expr "x$target" : 'x[^=]*-\(.*\)'`
+
+	case "$arch" in
+	x86|arm|ppc|sh|mips)
+		;;
+	*)
+		quit "Unkown target architecture: $arch"
+		;;
+	esac
+}
+
+gethost()
+{
+	# 'uname' command may be unavailable under Windows.
+	# So, we check MACHTYPE variable for cygwin/mingw at first.
+	case "$MACHTYPE" in
+	*-cygwin)
+		hostname="CYGWIN"
+		;;
+	*-msys)
+		hostname="MINGW"
+		;;
+	*)
+		hostname=`uname -s`
+		;;
+	esac
+}
+
+settools()
+{
+	#
+	# Set host specific tool settings
+	#
+	case "$hostname" in
+	*BSD)
+		;;
+	SunOS)
+		# Solaris
+		as="gas"
+		ld="gld"
+		ar="gar"
+		strip="gstrip"
+		objcopy="gobjcopy"
+		objdump="gobjdump"
+		;;
+	CYGWIN*|MINGW*)
+		case "$host" in
+		x86)
+			prefix="x86-pc-cygwin-"
+			;;
+                x86_64)
+			prefix="x86_64-pc-cygwin-"
+			;;
+		ppc)
+			prefix="powerpc-elf-"
+			;;
+		*)
+			prefix="$arch-elf-"
+			;;
+		esac
+		;;
+	esac
+
+	#
+	# Set tools
+	#
+	case "$cc" in
+	*gcc*)
+		cc_type="_GNUC_"
+		;;
+	pcc)
+		cc_type="_PCC_"
+		;;
+	suncc)
+		cc_type="_SUNPRO_C_"
+		cc="suncc"
+		;;
+	*)
+		quit "Unkown compiler: $cc"
+		;;
+	esac
+}
+
+# Set the gcc option only when it's supported.
+setgccoption()
+{
+	echo "checking $1"
+	if ${prefix}${cc} $1 -S -xc /dev/null -o /dev/null > /dev/null 2>&1; then
+		echo "GCCFLAGS+= $1" >> $CONFIG_MK
+	fi
+}
+
+checktools()
+{
+	#
+	# Check compiler version
+	#
+	case "$cc" in
+	*gcc*)
+		setgccoption "-fno-stack-protector"
+		;;
+	esac
+}
+
+main()
+{
+	#
+	# Process input arguments
+	#
+	setdefaults
+	parseargs "$@"
+	gettarget
+	checkpath
+	gethost
+	settools
+
+	echo "#" > $CONFIG_MK
+	echo "# Automatically generated file. Don't edit" >> $CONFIG_MK
+	echo "#" >> $CONFIG_MK
+	echo "_CONFIG_MK_=1" >> $CONFIG_MK
+
+	#
+	# Setup build settings
+	#
+	{
+		echo "BUILD=${build}"
+		echo "HOST=${host}"
+		echo "TARGET=${target}"
+                echo "SYSROOT=${sysroot}"
+
+		echo "CC=${host_prefix}${cc}"
+		echo "CPP=${host_prefix}${cpp}"
+		echo "AS=${host_prefix}${as}"
+		echo "LD=${host_prefix}${ld}"
+		echo "AR=${host_prefix}${ar}"
+		echo "OBJCOPY=${host_prefix}${objcopy}"
+		echo "OBJDUMP=${host_prefix}${objdump}"
+		echo "STRIP=${host_prefix}${strip}"
+
+	} >> $CONFIG_MK
+
+	#
+	# Adjust tool options
+	#
+	checktools
+
+
+	echo
+	echo "Cross-builder is now hopefully configured for your setup."
+	echo "Now you must run a make."
+}
+
+main "$@"
