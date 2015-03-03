@@ -1,13 +1,16 @@
 include conf/config.mk
-include conf/getsrc.mk
 
 lc_all=posix
 path=$(SYSROOT)/bin:/bin:/usr/bin
 TEMP_PREFIX=/build-temp-arm
 BUILD_PATH=build-$(TARGET)
 
-prepare: prerequest decompress-src
+
 all: install-cross
+
+prepare: prerequest decompress-src
+
+include conf/getsrc.mk
 
 prerequest:
 	set +h && mkdir -p $(SYSROOT)/bin && mkdir -p $(PREFIX)/include && \
@@ -23,13 +26,13 @@ decompress-src:
 
 install-deps: gmp mpfr mpc
 
-gmp: gmp-$(gmp_v)
+gmp: src/gmp-$(gmp_v)
 	mkdir -p $(BUILD_PATH)/gmp-$(gmp_v) && 			\
 	cd $(BUILD_PATH)/gmp-$(gmp_v) && 			\
 	../../src/gmp-$(gmp_v)/configure --prefix=$(TEMP_PREFIX) &&	\
 	make && make install
 
-mpfr: mpfr-$(mpfr_v) gmp
+mpfr: src/mpfr-$(mpfr_v) gmp
 	mkdir -p $(BUILD_PATH)/mpfr-$(mpfr_v) && 		\
 	cd $(BUILD_PATH)/mpfr-$(mpfr_v) && 			\
 	../../src/mpfr-$(mpfr_v)/configure ldflags="-wl,-search_paths_first"	\
@@ -37,7 +40,7 @@ mpfr: mpfr-$(mpfr_v) gmp
 	--with-gmp=$(TEMP_PREFIX) --prefix=$(TEMP_PREFIX) &&			\
 	make all && make install
 
-mpc: mpc-$(mpc_v) gmp mpfr
+mpc: src/mpc-$(mpc_v) gmp mpfr
 	mkdir -p $(BUILD_PATH)/mpc-$(mpc_v) &&			\
 	cd $(BUILD_PATH)/mpc-$(mpc_v) && 			\
 	../../src/mpc-$(mpc_v)/configure --with-mpfr=$(TEMP_PREFIX)		\
@@ -48,14 +51,14 @@ mpc: mpc-$(mpc_v) gmp mpfr
 
 install-cross: install-deps cross-binutils cross-gcc
 
-cross-binutils: binutils-$(binutils_v)
+cross-binutils: src/binutils-$(binutils_v)
 	mkdir -p $(BUILD_PATH)/binutils-$(binutils_v) && 		\
 	cd $(BUILD_PATH)/binutils-$(binutils_v) && 			\
 	../../src/binutils-$(binutils_v)/configure --prefix=$(SYSROOT)		\
 	--target=$(TARGET) --with-sysroot --disable-nls --disable-werror &&	\
 	make && make install
 
-cross-gcc: gcc-$(gcc_v)
+cross-gcc: src/gcc-$(gcc_v)
 	mkdir -p $(BUILD_PATH)/gcc-$(gcc_v) && 		\
 	cd $(BUILD_PATH)/gcc-$(gcc_v) && 		\
 	../../src/gcc-$(gcc_v)/configure --target=$(TARGET) --prefix=$(SYSROOT) 	\
