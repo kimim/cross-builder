@@ -50,7 +50,7 @@ setdefaults()
 checkpath()
 {
 	# Output files
-	CONFIG_MK=$srcdir/config.mk
+	CONFIG_MK=$srcdir/conf/config.mk
 }
 
 parseargs()
