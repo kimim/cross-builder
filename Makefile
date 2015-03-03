@@ -1,19 +1,10 @@
 include config.mk
+include getsrc.mk
 
 lc_all=posix
 path=$(SYSROOT)/bin:/bin:/usr/bin
 TEMP_PREFIX=/build-temp-arm
 BUILD_PATH=build-$(TARGET)
-
-binutils_v = 2.25
-gcc_v = 4.9.2
-gmp_v = 6.0.0
-mpfr_v = 3.1.2
-mpc_v = 1.0.2
-linux_v = 2.6.34
-glibc_v = 2.11.2
-glibc-ports_v = 2.11
-gdb_v = 7.1
 
 all: prerequest install-cross
 
