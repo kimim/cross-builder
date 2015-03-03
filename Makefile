@@ -14,24 +14,24 @@ prerequest:
 	export path lc_all
 
 decompress-src:
-	tar -xvf src/gmp-$(gmp_v).tar.bz2
-	tar -xvf src/mpfr-$(mpfr_v).tar.xz
-	tar -xvf src/mpc-$(mpc_v).tar.gz
-	tar -xvf src/binutils-$(binutils_v).tar.gz
-	tar -xvf src/gcc-$(gcc_v).tar.bz2
+	tar -xvf src/gmp-$(gmp_v).tar.bz2 -C src
+	tar -xvf src/mpfr-$(mpfr_v).tar.xz -C src
+	tar -xvf src/mpc-$(mpc_v).tar.gz -C src
+	tar -xvf src/binutils-$(binutils_v).tar.gz -C src
+	tar -xvf src/gcc-$(gcc_v).tar.bz2 -C src
 
 install-deps: gmp mpfr mpc
 
 gmp: gmp-$(gmp_v)
 	mkdir -p $(BUILD_PATH)/gmp-$(gmp_v) && 			\
 	cd $(BUILD_PATH)/gmp-$(gmp_v) && 			\
-	../../gmp-$(gmp_v)/configure --prefix=$(TEMP_PREFIX) &&	\
+	../../src/gmp-$(gmp_v)/configure --prefix=$(TEMP_PREFIX) &&	\
 	make && make install
 
 mpfr: mpfr-$(mpfr_v) gmp
 	mkdir -p $(BUILD_PATH)/mpfr-$(mpfr_v) && 		\
 	cd $(BUILD_PATH)/mpfr-$(mpfr_v) && 			\
-	../../mpfr-$(mpfr_v)/configure ldflags="-wl,-search_paths_first"	\
+	../../src/mpfr-$(mpfr_v)/configure ldflags="-wl,-search_paths_first"	\
 	--build=$(BUILD) --host=$(HOST) --target=$(TARGET) 			\
 	--with-gmp=$(TEMP_PREFIX) --prefix=$(TEMP_PREFIX) &&			\
 	make all && make install
@@ -39,7 +39,7 @@ mpfr: mpfr-$(mpfr_v) gmp
 mpc: mpc-$(mpc_v) gmp mpfr
 	mkdir -p $(BUILD_PATH)/mpc-$(mpc_v) &&			\
 	cd $(BUILD_PATH)/mpc-$(mpc_v) && 			\
-	../../mpc-$(mpc_v)/configure --with-mpfr=$(TEMP_PREFIX)		\
+	../../src/mpc-$(mpc_v)/configure --with-mpfr=$(TEMP_PREFIX)		\
 	--with-gmp=$(TEMP_PREFIX) --prefix=$(TEMP_PREFIX)		\
 	--build=$(BUILD) --host=$(HOST) --target=$(TARGET) 		\
 	--enable-static --disable-shared &&				\
@@ -50,15 +50,18 @@ install-cross: install-deps cross-binutils cross-gcc
 cross-binutils: binutils-$(binutils_v)
 	mkdir -p $(BUILD_PATH)/binutils-$(binutils_v) && 		\
 	cd $(BUILD_PATH)/binutils-$(binutils_v) && 			\
-	../../binutils-$(binutils_v)/configure --prefix=$(SYSROOT)		\
+	../../src/binutils-$(binutils_v)/configure --prefix=$(SYSROOT)		\
 	--target=$(TARGET) --with-sysroot --disable-nls --disable-werror &&	\
 	make && make install
 
 cross-gcc: gcc-$(gcc_v)
 	mkdir -p $(BUILD_PATH)/gcc-$(gcc_v) && 		\
 	cd $(BUILD_PATH)/gcc-$(gcc_v) && 		\
-	../../gcc-$(gcc_v)/configure --target=$(TARGET) --prefix=$(SYSROOT) 	\
+	../../src/gcc-$(gcc_v)/configure --target=$(TARGET) --prefix=$(SYSROOT) 	\
 	--disable-nls --enable-languages=c,c++ --with-gmp=$(TEMP_PREFIX)    	\
 	--with-mpfr=$(TEMP_PREFIX) --with-mpc=$(TEMP_PREFIX) && 		\
 	make all-gcc && make all-target-libgcc && \
 	make install-gcc && make install-target-libgcc
+
+clean:
+	rm build* -rf
