@@ -9,6 +9,7 @@ glibc-ports_v = 2.11
 gdb_v = 7.1
 
 get-src:
+	mkdir -p src
 	wget http://ftp.gnu.org/gnu/binutils/binutils-$(binutils_v).tar.gz -P src
 	wget http://ftp.gnu.org/gnu/gcc/gcc-$(gcc_v)/gcc-$(gcc_v).tar.bz2 -P src
 	wget http://ftp.gnu.org/gnu/gmp/gmp-$(gmp_v)a.tar.xz -P src

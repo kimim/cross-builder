@@ -1,2 +1,4 @@
 # Auto generated files
 conf/config.mk
+src
+build*

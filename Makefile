@@ -6,7 +6,8 @@ path=$(SYSROOT)/bin:/bin:/usr/bin
 TEMP_PREFIX=/build-temp-arm
 BUILD_PATH=build-$(TARGET)
 
-all: prerequest install-cross
+prepare: prerequest decompress-src
+all: install-cross
 
 prerequest:
 	set +h && mkdir -p $(SYSROOT)/bin && mkdir -p $(PREFIX)/include && \
