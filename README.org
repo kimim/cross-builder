@@ -1,2 +1,2 @@
-* TODO list
+* todo list
 - fetch latest version src archive by sorting the version/release date
