@@ -23,6 +23,7 @@ decompress-src:
 	tar -xvf src/mpc-$(mpc_v).tar.gz -C src
 	tar -xvf src/binutils-$(binutils_v).tar.gz -C src
 	tar -xvf src/gcc-$(gcc_v).tar.bz2 -C src
+	tar -xvf src/gdb-$(gdb_v).tar.xz -C src
 
 install-deps: gmp mpfr mpc
 
@@ -66,6 +67,12 @@ cross-gcc: src/gcc-$(gcc_v)
 	--with-mpfr=$(TEMP_PREFIX) --with-mpc=$(TEMP_PREFIX) && 		\
 	make all-gcc && make all-target-libgcc && \
 	make install-gcc && make install-target-libgcc
+
+cross-gdb: src/gdb-$(gdb_v)
+	mkdir -p $(BUILD_PATH)/gdb-$(gdb_v) && 		\
+	cd $(BUILD_PATH)/gdb-$(gdb_v) && 		\
+	../../src/gdb-$(gdb_v)/configure --target=$(TARGET) --prefix=$(SYSROOT) &&	\
+	make && make instal
 
 clean:
 	rm build* -rf
