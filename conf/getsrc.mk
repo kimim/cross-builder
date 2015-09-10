@@ -1,12 +1,12 @@
 binutils_v = 2.25
-gcc_v = 4.9.2
+gcc_v = 5.2.0
 gmp_v = 6.0.0
-mpfr_v = 3.1.2
+mpfr_v = 3.1.3
 mpc_v = 1.0.3
 linux_v = 2.6.34
 glibc_v = 2.11.2
 glibc-ports_v = 2.11
-gdb_v = 7.9
+gdb_v = 7.10
 
 get-src: get-src-gdb
 	mkdir -p src

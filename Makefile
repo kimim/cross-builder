@@ -1,8 +1,7 @@
 include conf/config.mk
 
 lc_all=posix
-path=$(SYSROOT)/bin:/bin:/usr/bin
-TEMP_PREFIX=/build-temp-arm
+path=$(SYSROOT)/bin:/bin:/usr/bin:/usr/local/bin
 BUILD_PATH=build-$(TARGET)
 
 
@@ -18,7 +17,7 @@ prerequest:
 	export path lc_all
 
 decompress-src:
-	tar -xvf src/gmp-$(gmp_v).tar.bz2 -C src
+	tar -xvf src/gmp-$(gmp_v).tar.xz -C src
 	tar -xvf src/mpfr-$(mpfr_v).tar.xz -C src
 	tar -xvf src/mpc-$(mpc_v).tar.gz -C src
 	tar -xvf src/binutils-$(binutils_v).tar.gz -C src

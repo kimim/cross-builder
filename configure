@@ -16,8 +16,10 @@ usage()
 	echo "	--help			print this message"
         echo "	--build=BUILD		use BUILD to compile target compiler"
 	echo "	--host=HOST		use HOST to compile target compiler"
+        echo "  --version=VERSION       use GCC VERSION for to compile target compiler"
 	echo "	--target=TARGET		use TARGET for target compiler"
         echo "  --sysroot=SYSROOT       use SYSROOT for target compiler"
+
 
 	exit 1
 }
@@ -32,12 +34,14 @@ setdefaults()
 {
         build="x86_64-pc-cygwin"
         host="x86_64"
+        version=""
 	target="arm-eabi"
-        sysroot="/cross-"$target
+        sysroot="`echo $HOME`/cross-"$target
 	srcdir=`pwd`
 
 	# Use GNU tools as default toolchain
 	cc="gcc"
+        cxx="g++"
 	cpp="cpp"
 	as="as"
 	ld="ld"
@@ -79,6 +83,9 @@ parseargs()
 		--host)
 			host=$optarg
 			;;
+                --version)
+                        version=$optarg
+                        ;;
 		--target)
 			target=$optarg
 			;;
@@ -124,6 +131,9 @@ gethost()
 	*-msys)
 		hostname="MINGW"
 		;;
+        *-darwin*)
+                hostname="DARWIN"
+                ;;
 	*)
 		hostname=`uname -s`
 		;;
@@ -157,6 +167,17 @@ settools()
 			;;
 		ppc)
 			prefix="powerpc-elf-"
+			;;
+		*)
+			prefix="$arch-elf-"
+			;;
+		esac
+		;;
+        DARWIN*)
+		case "$host" in
+                x86_64)
+                    echo "darwin x86_64"
+	            prefix="x86_64-apple-darwin14.5.0-"
 			;;
 		*)
 			prefix="$arch-elf-"
@@ -231,15 +252,17 @@ main()
 		echo "HOST=${host}"
 		echo "TARGET=${target}"
                 echo "SYSROOT=${sysroot}"
+                echo "TEMP_PREFIX=`pwd`/build-lib-temp"
 
-		echo "CC=${host_prefix}${cc}"
-		echo "CPP=${host_prefix}${cpp}"
-		echo "AS=${host_prefix}${as}"
-		echo "LD=${host_prefix}${ld}"
-		echo "AR=${host_prefix}${ar}"
-		echo "OBJCOPY=${host_prefix}${objcopy}"
-		echo "OBJDUMP=${host_prefix}${objdump}"
-		echo "STRIP=${host_prefix}${strip}"
+		echo "CC=${prefix}${cc}${version:+-}${version}"
+                echo "CXX=${prefix}${cxx}${version:+-}${version}"
+		echo "CPP=${prefix}${cpp}${version:+-}${version}"
+		echo "AS=${prefix}${as}${version:+-}${version}"
+		echo "LD=${prefix}${cc}${version:+-}${version}"
+		echo "AR=${prefix}${ar}${version:+-}${version}"
+		echo "OBJCOPY=${prefix}${objcopy}${version:+-}${version}"
+		echo "OBJDUMP=${prefix}${objdump}${version:+-}${version}"
+		echo "STRIP=${prefix}${strip}${version:+-}${version}"
 
 	} >> $CONFIG_MK
 

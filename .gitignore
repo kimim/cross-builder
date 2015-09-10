@@ -2,3 +2,4 @@
 conf/config.mk
 src
 build*
+.DS_Store
