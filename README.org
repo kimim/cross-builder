@@ -22,6 +22,16 @@ ln -s gobjdump x86_64-apple-darwin14.5.0-objdump-5
 ln -s gstrip x86_64-apple-darwin14.5.0-strip-5
 #+END_SRC
 
+If gmp, mpc, mpfr are compiled with OS X system clang cc, you may meet
+following error when compiling gcc:
+#+BEGIN_SRC
+checking for arm-eabi-gcc...  /Users/kimim/Workspace/cross-builder/build-arm-eabi/gcc-4.9.2/./gcc/xgcc -B/Users/kimim/Workspace/cross-builder/build-arm-eabi/gcc-4.9.2/./gcc/ -B/Users/kimim/cross-arm-eabi/arm-eabi/bin/ -B/Users/kimim/cross-arm-eabi/arm-eabi/lib/ -isystem /Users/kimim/cross-arm-eabi/arm-eabi/include -isystem /Users/kimim/cross-arm-eabi/arm-eabi/sys-include
+checking for suffix of object files... configure: error: in `/Users/kimim/Workspace/cross-builder/build-arm-eabi/gcc-4.9.2/arm-eabi/libgcc':
+configure: error: cannot compute suffix of object files: cannot compile
+See `config.log' for more details.
+make[1]: *** [configure-target-libgcc] Error 1
+#+END_SRC
+
 * Example Configure Parameter
 I run =./configure= in my Windows machine with:
 #+BEGIN_SRC sh
@@ -33,16 +43,5 @@ In my OX X Yosemite 10.10.5:
 ./configure --build=x86_64-apple-darwin14.5.0 --host=x86_64 --version=5 --target=arm-eabi
 #+END_SRC
 
-* About Target GCC Version
-Though the latest gcc version is 5.2.0, but I can only successfully
-compile version 4.9.2. Error for version 5.2.0:
-#+BEGIN_SRC
-checking for arm-eabi-gcc...  /Users/kimim/Workspace/cross-builder/build-arm-eabi/gcc-4.9.2/./gcc/xgcc -B/Users/kimim/Workspace/cross-builder/build-arm-eabi/gcc-4.9.2/./gcc/ -B/Users/kimim/cross-arm-eabi/arm-eabi/bin/ -B/Users/kimim/cross-arm-eabi/arm-eabi/lib/ -isystem /Users/kimim/cross-arm-eabi/arm-eabi/include -isystem /Users/kimim/cross-arm-eabi/arm-eabi/sys-include
-checking for suffix of object files... configure: error: in `/Users/kimim/Workspace/cross-builder/build-arm-eabi/gcc-4.9.2/arm-eabi/libgcc':
-configure: error: cannot compute suffix of object files: cannot compile
-See `config.log' for more details.
-make[1]: *** [configure-target-libgcc] Error 1
-#+END_SRC
-
-*  TO BE DONE
+* TO BE DONE
 - fetch latest version src archive by sorting the version/release date
