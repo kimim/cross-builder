@@ -1,2 +1,48 @@
-* todo list
+
+* Mac OS X Users
+
+=make cross-gccc= is using system clang version gcc causes 'fatal
+error: bracket nesting level exceeded maximum' problem. So before
+making, you'd better export following variables:
+#+BEGIN_SRC sh
+export CC=/usr/local/bin/gcc-5
+export CXX=/usr/bin/local/g++-5
+export CPP=/usr/bin/local/cpp-5
+export LD=/usr/bin/local/gcc-5
+#+END_SRC
+
+Because the binutils tools are only available with prefix =g=, it is
+not what we want in =config.mk=, so please also create symbolic link
+for them:
+
+#+BEGIN_SRC sh
+ln -s cpp-5 x86_64-apple-darwin14.5.0-cpp-5
+ln -s gobjcopy x86_64-apple-darwin14.5.0-objcopy-5
+ln -s gobjdump x86_64-apple-darwin14.5.0-objdump-5
+ln -s gstrip x86_64-apple-darwin14.5.0-strip-5
+#+END_SRC
+
+* Example Configure Parameter
+I run =./configure= in my Windows machine with:
+#+BEGIN_SRC sh
+./configure --build=x86_64-pc-cygwin --host=x86_64 --target=arm-eabi
+#+END_SRC
+
+In my OX X Yosemite 10.10.5:
+#+BEGIN_SRC sh
+./configure --build=x86_64-apple-darwin14.5.0 --host=x86_64 --version=5 --target=arm-eabi
+#+END_SRC
+
+* About Target GCC Version
+Though the latest gcc version is 5.2.0, but I can only successfully
+compile version 4.9.2. Error for version 5.2.0:
+#+BEGIN_SRC
+checking for arm-eabi-gcc...  /Users/kimim/Workspace/cross-builder/build-arm-eabi/gcc-4.9.2/./gcc/xgcc -B/Users/kimim/Workspace/cross-builder/build-arm-eabi/gcc-4.9.2/./gcc/ -B/Users/kimim/cross-arm-eabi/arm-eabi/bin/ -B/Users/kimim/cross-arm-eabi/arm-eabi/lib/ -isystem /Users/kimim/cross-arm-eabi/arm-eabi/include -isystem /Users/kimim/cross-arm-eabi/arm-eabi/sys-include
+checking for suffix of object files... configure: error: in `/Users/kimim/Workspace/cross-builder/build-arm-eabi/gcc-4.9.2/arm-eabi/libgcc':
+configure: error: cannot compute suffix of object files: cannot compile
+See `config.log' for more details.
+make[1]: *** [configure-target-libgcc] Error 1
+#+END_SRC
+
+*  TO BE DONE
 - fetch latest version src archive by sorting the version/release date
