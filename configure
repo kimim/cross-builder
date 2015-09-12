@@ -258,7 +258,7 @@ main()
                 echo "CXX=${prefix}${cxx}${version:+-}${version}"
 		echo "CPP=${prefix}${cpp}${version:+-}${version}"
 		echo "AS=${prefix}${as}${version:+-}${version}"
-		echo "LD=${prefix}${cc}${version:+-}${version}"
+		echo "LD=${prefix}${ld}${version:+-}${version}"
 		echo "AR=${prefix}${ar}${version:+-}${version}"
 		echo "OBJCOPY=${prefix}${objcopy}${version:+-}${version}"
 		echo "OBJDUMP=${prefix}${objdump}${version:+-}${version}"
