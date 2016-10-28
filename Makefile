@@ -74,4 +74,4 @@ cross-gdb: src/gdb-$(gdb_v)
 	make && make instal
 
 clean:
-	rm build* -rf
+	rm -rf build*
