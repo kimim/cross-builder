@@ -14,7 +14,7 @@ gmp_url=http://ftp.gnu.org/gnu/gmp/
 mpfr_url=http://ftp.gnu.org/gnu/mpfr/
 gdb_url=http://ftp.gnu.org/gnu/gdb/
 
-get-src: gmp-src mpfr-src gdb-src mpc-src gcc-src
+get-src: gmp-src mpfr-src gdb-src mpc-src gcc-src binutils-src
 	rm -f *.html*
 
 gmp-src:
@@ -36,3 +36,7 @@ mpc-src:
 gcc-src:
 	wget $(gcc_url) -O gcc.html
 	wget $(gcc_url)$(shell htmltree gcc.html | grep \ \"gcc-[:digit:].*\.tar\.gz\" | tail -n 1 | cut -d \" -f 2) -P src
+
+binutils-src:
+	wget $(binutils_url) -O binutils.html
+	wget $(binutils_url)$(shell htmltree binutils.html | grep \ \"binutils-.*\.tar\.gz\" | tail -n 1 | cut -d \" -f 2) -P src
