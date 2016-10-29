@@ -21,7 +21,7 @@ decompress-src:
 	tar -xvf src/mpfr-*.tar.xz -C src
 	tar -xvf src/mpc-*.tar.gz -C src
 	tar -xvf src/binutils-*.tar.gz -C src
-	tar -xvf src/gcc-*.tar.bz2 -C src
+	tar -xvf src/gcc-*.tar.gz -C src
 	tar -xvf src/gdb-*.tar.xz -C src
 
 install-deps: gmp mpfr mpc

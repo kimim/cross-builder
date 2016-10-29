@@ -33,10 +33,10 @@ mpc-src:
 	wget $(mpc_url) -O mpc.html
 	wget $(mpc_url)$(shell htmltree mpc.html | grep \ \"mpc.*[:digit:].*.gz\" | tail -n 1 | cut -d \" -f 2) -P src
 
-gcc-src:
-	wget $(gcc_url) -O gcc.html
-	wget $(gcc_url)$(shell htmltree gcc.html | grep \ \"gcc-[:digit:].*\.tar\.gz\" | tail -n 1 | cut -d \" -f 2) -P src
-
 binutils-src:
 	wget $(binutils_url) -O binutils.html
 	wget $(binutils_url)$(shell htmltree binutils.html | grep \ \"binutils-.*\.tar\.gz\" | tail -n 1 | cut -d \" -f 2) -P src
+
+gcc-src:
+	wget $(gcc_url) -O gcc.html
+	wget $(gcc_url)$(shell htmltree gcc.html | grep gcc-[0-9].*\"$ | tail -n 1 | cut -d \" -f 2)/$(shell htmltree gcc.html | grep gcc-[0-9].*\"$ | tail -n 1 | cut -d \" -f 2).tar.gz -P src
